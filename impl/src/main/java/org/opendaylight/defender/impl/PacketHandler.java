@@ -8,6 +8,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.Pa
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.*;
+//import static java.lang.System.out;
+
 
 public class PacketHandler implements PacketProcessingListener
 {
@@ -68,7 +71,7 @@ public class PacketHandler implements PacketProcessingListener
             LOG.info("[liuhy] Received packet from MAC {} to MAC {}, EtherType=0x{} ", srcMac, dstMac, stringEthType);
 
         }
-        else
+        else if (stringEthType.equals("800"))
         {
             dstIPRaw = PacketParsing.extractDstIP(payload);
             srcIPRaw = PacketParsing.extractSrcIP(payload);
@@ -78,17 +81,28 @@ public class PacketHandler implements PacketProcessingListener
             rawIPProtocol = PacketParsing.extractIPProtocol(payload);
             ipProtocol = PacketParsing.rawIPProtoToString(rawIPProtocol).toString();
 
-
             rawSrcPort = PacketParsing.extractSrcPort(payload);
             srcPort = PacketParsing.rawPortToInteger(rawSrcPort);
             rawDstPort = PacketParsing.extractDstPort(payload);
             dstPort = PacketParsing.rawPortToInteger(rawDstPort);
+
+
+            try {
+            FileOutputStream out = new FileOutputStream("/home/ovs/pktResult.txt");
+            PrintStream p=new PrintStream(out);
+            p.println("[liuhy] Received packet from IP" + srcIP + "to IP " + dstIP + ", EtherType=0x{} " + stringEthType);
+            } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            }
+
+
+            LOG.info("[liuhy] Received packet from IP {} to IP {}, EtherType=0x{} ", srcIP, dstIP, stringEthType);
+
         }
 
         counter = counter + 1;
         LOG.info("[liuhy] Totally receive {} packets for now ", counter);
     }
 
-	
 	
 }
