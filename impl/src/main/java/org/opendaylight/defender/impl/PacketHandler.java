@@ -7,9 +7,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.Pa
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.text.SimpleDateFormat;
 
 import java.io.*;
-//import static java.lang.System.out;
 
 
 public class PacketHandler implements PacketProcessingListener
@@ -53,10 +53,11 @@ public class PacketHandler implements PacketProcessingListener
 
         //packetSize = payload.length;
 
-        //int packetSize = payload.length;
+
 
         payload = notification.getPayload();
         //LOG.info("[liuhy] enter 3 !!!!!");
+        int packetSize = payload.length;
         srcMacRaw = PacketParsing.extractSrcMac(payload);
         dstMacRaw = PacketParsing.extractDstMac(payload);
         srcMac = PacketParsing.rawMacToString(srcMacRaw);
@@ -69,7 +70,6 @@ public class PacketHandler implements PacketProcessingListener
         {
             LOG.info("[liuhy] This is an ARP packet ");
             LOG.info("[liuhy] Received packet from MAC {} to MAC {}, EtherType=0x{} ", srcMac, dstMac, stringEthType);
-
         }
         else if (stringEthType.equals("800"))
         {
@@ -86,17 +86,27 @@ public class PacketHandler implements PacketProcessingListener
             rawDstPort = PacketParsing.extractDstPort(payload);
             dstPort = PacketParsing.rawPortToInteger(rawDstPort);
 
+            SimpleDateFormat df = new SimpleDateFormat();
+            String time = df.format(System.currentTimeMillis());
+
+            String content = "[liuhy] Time : " + time + " Received packet from IP " + srcIP + " to IP " + dstIP + ", EtherType=0x" + stringEthType + " srcProt " + srcPort + " dstPort " + dstPort + " size " + String.valueOf(packetSize);
+            String path = "/home/ovs/result.txt";
+            BufferedWriter out = null;
 
             try {
-            FileOutputStream out = new FileOutputStream("/home/ovs/pktResult.txt");
-            PrintStream p=new PrintStream(out);
-            p.println("[liuhy] Received packet from IP" + srcIP + "to IP " + dstIP + ", EtherType=0x{} " + stringEthType);
-            } catch (FileNotFoundException e) {
-            e.printStackTrace();
+                out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(path, true)));
+                out.write(content + "\r\n");
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    out.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
 
-
-            LOG.info("[liuhy] Received packet from IP {} to IP {}, EtherType=0x{} ", srcIP, dstIP, stringEthType);
+            //LOG.info("[liuhy] Received packet from IP {} to IP {}, EtherType=0x{} ", srcIP, dstIP, stringEthType);
 
         }
 

@@ -185,7 +185,8 @@ public class PacketParsing
         if (rawIP != null && rawIP.length == 4) {
             StringBuilder sb = new StringBuilder();
             for (byte octet : rawIP) {
-                sb.append(String.format(".%d", octet));
+                int a = octet & 0xff;
+                sb.append(String.format(".%d", a));
             }
             return sb.substring(1);
         }
