@@ -9,6 +9,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.text.SimpleDateFormat;
 
+import java.text.DateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
 import java.io.*;
 
 
@@ -51,9 +55,21 @@ public class PacketHandler implements PacketProcessingListener
         ingressNode = ingressNodeId.getValue();
         //LOG.info("[liuhy] enter 2 !!!!!");
 
-        LOG.info("[liuhy] ingressNode " + ingressNode);
+        //LOG.info("[liuhy] ingressNode " + ingressNode);
 
         //packetSize = payload.length;
+
+        Calendar cal = Calendar.getInstance();
+        int year = cal.get(Calendar.YEAR);
+        int month = cal.get(Calendar.MONTH);
+        int day = cal.get(Calendar.DATE);
+        int hour = cal.get(Calendar.HOUR);
+        int minute = cal.get(Calendar.MINUTE);
+        int second = cal.get(Calendar.SECOND);
+        String div1 = ".";
+        String div2 = ":";
+        String time = String.format("%04d", year) + div1 + String.format("%02d", month) + div1 + String.format("%02d", day) + "-" + String.format("%02d", hour) + div2 + String.format("%02d", minute) + div2 + String.format("%02d", second);
+
 
 
 
@@ -88,12 +104,10 @@ public class PacketHandler implements PacketProcessingListener
             rawDstPort = PacketParsing.extractDstPort(payload);
             dstPort = PacketParsing.rawPortToInteger(rawDstPort);
 
-            SimpleDateFormat df = new SimpleDateFormat();
-            String time = df.format(System.currentTimeMillis());
+
 
             String content = "Time " + time + " src_IP " + srcIP + " dst_IP " + dstIP + " EtherType 0x0" + stringEthType + " srcProt " + srcPort + " dstPort " + dstPort + " size " + String.valueOf(packetSize);
-            String path = "/home/ovs/result.txt";
-            BufferedWriter out = null;
+            String path = "/home/ovs/" + ingressNode + "_pktin.txt";
 
             FileWriter fw = new FileWriter(path);
             fw.writeLine(content);
