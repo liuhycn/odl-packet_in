@@ -51,6 +51,8 @@ public class PacketHandler implements PacketProcessingListener
         ingressNode = ingressNodeId.getValue();
         //LOG.info("[liuhy] enter 2 !!!!!");
 
+        LOG.info("[liuhy] ingressNode " + ingressNode);
+
         //packetSize = payload.length;
 
 
@@ -89,22 +91,13 @@ public class PacketHandler implements PacketProcessingListener
             SimpleDateFormat df = new SimpleDateFormat();
             String time = df.format(System.currentTimeMillis());
 
-            String content = "[liuhy] Time : " + time + " Received packet from IP " + srcIP + " to IP " + dstIP + ", EtherType=0x" + stringEthType + " srcProt " + srcPort + " dstPort " + dstPort + " size " + String.valueOf(packetSize);
+            String content = "Time " + time + " src_IP " + srcIP + " dst_IP " + dstIP + " EtherType 0x0" + stringEthType + " srcProt " + srcPort + " dstPort " + dstPort + " size " + String.valueOf(packetSize);
             String path = "/home/ovs/result.txt";
             BufferedWriter out = null;
 
-            try {
-                out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(path, true)));
-                out.write(content + "\r\n");
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                try {
-                    out.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+            FileWriter fw = new FileWriter(path);
+            fw.writeLine(content);
+
 
             //LOG.info("[liuhy] Received packet from IP {} to IP {}, EtherType=0x{} ", srcIP, dstIP, stringEthType);
 
